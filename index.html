@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TAJWID FROG ADVENTURE - Game Pembelajaran Tajwid SD</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap');
+
+        :root {
+            --primary: #22c55e;
+            --primary-dark: #15803d;
+            --secondary: #06b6d4;
+            --secondary-dark: #0e7490;
+            --danger: #ef4444;
+            --danger-dark: #b91c1c;
+            --warning: #f59e0b;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --bg-top: #a7f3d0;
+            --bg-bottom: #0284c7;
+            --leaf-green: #65a30d;
+            --leaf-glow: #a3e635;
+            --font-main: 'Nunito', sans-serif;
+            
+            --p1-color: #3b82f6;
+            --p2-color: #ef4444;
+            --p3-color: #eab308;
+            --p4-color: #a855f7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+            color: var(--dark);
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bg-particles {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(255,255,255,0.2) 0%, transparent 12%),
+                radial-gradient(circle at 85% 30%, rgba(255,255,255,0.25) 0%, transparent 18%),
+                radial-gradient(circle at 50% 75%, rgba(255,255,255,0.15) 0%, transparent 22%);
+        }
+
+        .hidden { display: none !important; }
+        .flex-center { display: flex; justify-content: center; align-items: center; }
+
+        .top-actions {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.92);
+            border: 2px solid var(--dark);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 0 var(--dark);
+        }
+
+        .icon-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 var(--dark);
+        }
+
+        .btn-main {
+            background: linear-gradient(to bottom, var(--primary), var(--primary-dark));
+            color: white;
+            border: 3px solid white;
+            border-radius: 16px;
+            padding: 12px 24px;
+            font-size: 1.3rem;
+            font-weight: 900;
+            font-family: var(--font-main);
+            cursor: pointer;
+            box-shadow: 0 6px 0 var(--dark), 0 10px 15px rgba(0,0,0,0.15);
+            transition: transform 0.1s, filter 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 54px;
+            margin: 6px auto;
+        }
+
+        .btn-main small {
+            font-size: 0.8rem;
+            font-weight: 700;
+            opacity: 0.95;
+            text-transform: none;
+        }
+
+        .btn-main:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 var(--dark), 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .btn-main.blue { background: linear-gradient(to bottom, var(--secondary), var(--secondary-dark)); }
+        .btn-main.yellow { background: linear-gradient(to bottom, var(--warning), #d97706); }
+        .btn-main.dark { background: linear-gradient(to bottom, #334155, #0f172a); }
+
+        .screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .mode-transition {
+            opacity: 0;
+            transform: scale(0.96);
+            pointer-events: none;
+        }
+
+        #menu-screen {
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            overflow-y: auto;
+        }
+
+        .game-title {
+            font-size: clamp(2.2rem, 5vw, 4.2rem);
+            color: white;
+            line-height: 1.1;
+            margin-bottom: 6px;
+            text-shadow: 0 5px 0 var(--dark), 0 8px 15px rgba(0,0,0,0.3);
+            -webkit-text-stroke: 1.5px var(--dark);
+        }
+
+        .game-subtitle {
+            font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+            color: #fef08a;
+            font-weight: 900;
+            margin-bottom: 4px;
+            text-shadow: 2px 2px 0 var(--dark);
+        }
+        
+        .creator-text {
+            font-size: 0.85rem;
+            color: var(--dark);
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: rgba(255,255,255,0.65);
+            padding: 4px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+
+        @keyframes menuFrogIdle {
+            0%, 100% { transform: translateY(0) scale(1, 1); }
+            50% { transform: translateY(-6px) scale(1.03, 0.97); }
+        }
+
+        .menu-frog {
+            width: clamp(90px, 20vw, 140px);
+            animation: menuFrogIdle 2s infinite ease-in-out;
+            filter: drop-shadow(0 8px 6px rgba(0,0,0,0.25));
+            margin: 10px auto;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .menu-frog img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            pointer-events: none;
+        }
+
+        .level-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.4);
+            padding: 6px;
+            border-radius: 16px;
+            border: 2px solid var(--dark);
+        }
+
+        .level-btn {
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 900;
+            border: 2px solid var(--dark);
+            cursor: pointer;
+            background: white;
+            color: var(--dark);
+            transition: all 0.2s;
+        }
+
+        .level-btn.active {
+            background: var(--warning);
+            color: white;
+            box-shadow: 0 3px 0 var(--dark);
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 340px;
+        }
+
+        .menu-secondary {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            width: 100%;
+            max-width: 380px;
+        }
+        
+        .menu-secondary .btn-main {
+            font-size: 0.95rem;
+            padding: 8px 12px;
+            max-width: none;
+            flex: 1;
+        }
+
+        #game-screen {
+            background: transparent;
+        }
+
+        #playersContainer {
+            display: grid;
+            width: 100%;
+            height: 100%;
+            gap: 4px;
+            background: var(--dark);
+        }
+
+        /* Solo Layout */
+        #playersContainer.layout-solo {
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr;
+        }
+
+        /* Duel Layout */
+        #playersContainer.layout-duel {
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: 1fr;
+        }
+
+        /* Squad Layout */
+        #playersContainer.layout-squad {
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+        }
+
+        @media (orientation: portrait) and (max-width: 768px) {
+            #playersContainer.layout-duel,
+            #playersContainer.layout-squad {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+                overflow-y: auto;
+                background: transparent;
+                gap: 12px;
+                padding: 8px;
+            }
+            .player-board {
+                min-height: 85vh;
+                border-radius: 16px;
+                border: 3px solid var(--dark);
+                overflow: hidden;
+            }
+        }
+
+        .player-board {
+            background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(14, 165, 233, 0.6) 100%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .board-header {
+            background: rgba(255, 255, 255, 0.92);
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2.5px solid var(--dark);
+            z-index: 20;
+            position: relative;
+        }
+
+        .player-badge {
+            font-weight: 900;
+            padding: 3px 10px;
+            border-radius: 12px;
+            color: white;
+            font-size: 0.85rem;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+            border: 2px solid var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .p1-badge { background: var(--p1-color); }
+        .p2-badge { background: var(--p2-color); }
+        .p3-badge { background: var(--p3-color); }
+        .p4-badge { background: var(--p4-color); }
+
+        .status-tag {
+            font-size: 0.7rem;
+            background: rgba(0,0,0,0.2);
+            padding: 1px 6px;
+            border-radius: 8px;
+            text-transform: uppercase;
+        }
+
+        .stats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            font-weight: 800;
+            font-size: 0.85rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .lives { 
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+            letter-spacing: 2px;
+            white-space: nowrap;
+            z-index: 1;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.15));
+        }
+        
+        .progress-container {
+            width: 100%;
+            background: rgba(255,255,255,0.7);
+            height: 6px;
+            position: relative;
+            z-index: 20;
+        }
+        .progress-bar {
+            height: 100%;
+            background: var(--warning);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-box {
+            background: white;
+            margin: 10px;
+            padding: 12px;
+            border-radius: 14px;
+            border: 3px solid var(--dark);
+            box-shadow: 0 5px 0 var(--dark);
+            text-align: center;
+            font-size: clamp(0.95rem, 2.2vw, 1.3rem);
+            font-weight: 800;
+            z-index: 20;
+            min-height: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.35;
+        }
+
+        .question-num {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .scene {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding-top: 15px;
+            overflow: hidden;
+            transition: transform 0.5s ease-out;
+        }
+
+        .water-bg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 28%;
+            background: linear-gradient(to bottom, rgba(56, 189, 248, 0.6), rgba(2, 132, 199, 0.95));
+            z-index: 1;
+        }
+
+        /* NEW: Water Waves */
+        .wave-svg {
+            position: absolute;
+            bottom: 98%;
+            left: 0;
+            width: 200%;
+            height: 25px;
+            display: block;
+            animation: moveWaves 3s linear infinite;
+        }
+        .wave-svg.wave-back {
+            height: 35px;
+            bottom: 95%;
+            animation: moveWaves 4s linear infinite reverse;
+        }
+        @keyframes moveWaves {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* NEW: Grass */
+        .grass-container {
+            position: absolute;
+            bottom: 0;
+            height: 45px;
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            z-index: 20;
+            pointer-events: none;
+        }
+        .left-grass { left: 15px; }
+        .right-grass { right: 15px; flex-direction: row-reverse; }
+        .grass {
+            width: 7px;
+            background: linear-gradient(to top, var(--primary-dark), var(--leaf-green));
+            border-radius: 10px 10px 0 0;
+            transform-origin: bottom center;
+            border: 1px solid rgba(0,0,0,0.15);
+            border-bottom: none;
+        }
+        .g1 { height: 35px; animation: sway 2.5s ease-in-out infinite alternate; }
+        .g2 { height: 48px; animation: sway 3.2s ease-in-out infinite alternate-reverse; }
+        .g3 { height: 28px; animation: sway 2.8s ease-in-out infinite alternate; }
+        .g4 { height: 42px; animation: sway 2.7s ease-in-out infinite alternate; }
+        .g5 { height: 36px; animation: sway 3s ease-in-out infinite alternate-reverse; }
+        .g6 { height: 25px; animation: sway 2.4s ease-in-out infinite alternate; }
+        
+        @keyframes sway {
+            0% { transform: rotate(-12deg); }
+            100% { transform: rotate(12deg); }
+        }
+
+        /* NEW: Splash Droplets */
+        .splash-drop {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            background: #e0f2fe;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: dropAnim 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        @keyframes dropAnim {
+            0% { transform: translate(-50%, 0) scale(1.2); opacity: 1; }
+            50% { opacity: 1; }
+            100% { transform: translate(calc(-50% + var(--drop-x)), var(--drop-y)) scale(0.3); opacity: 0; }
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(8px, 1.8vw, 16px);
+            width: 92%;
+            max-width: 480px;
+            z-index: 15;
+        }
+
+        .start-platform {
+            position: absolute;
+            bottom: 12%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--leaf-green), var(--primary-dark));
+            border: 3px solid var(--dark);
+            border-radius: 50%;
+            box-shadow: 0 4px 0 var(--dark), inset 0 3px 0 rgba(255,255,255,0.3);
+            z-index: 5;
+        }
+
+        .frog-container {
+            position: absolute;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: clamp(55px, 8vw, 75px);
+            z-index: 20;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3));
+        }
+        
+        .frog-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            pointer-events: none;
+        }
+
+        .platform-btn {
+            background: linear-gradient(135deg, var(--leaf-green), var(--primary-dark));
+            border: 3px solid var(--dark);
+            border-radius: 8px 24px 8px 24px;
+            padding: clamp(12px, 2.5vw, 20px) 8px;
+            color: white;
+            font-weight: 800;
+            font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+            font-family: var(--font-main);
+            text-align: center;
+            cursor: pointer;
+            box-shadow: inset 0 -3px 0 rgba(0,0,0,0.25), 0 5px 0 var(--dark);
+            transition: transform 0.1s, background 0.2s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 56px;
+            line-height: 1.2;
+        }
+
+        .platform-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 50%;
+            width: 2px; height: 100%;
+            background: rgba(255,255,255,0.22);
+            transform: rotate(45deg);
+        }
+
+        .platform-btn:active, .platform-btn.pressed {
+            transform: translateY(5px);
+            box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2), 0 0 0 var(--dark);
+        }
+
+        .platform-btn.correct {
+            background: linear-gradient(135deg, #fef08a, var(--leaf-glow));
+            color: var(--dark);
+            animation: pulseCorrect 0.5s ease;
+        }
+
+        .platform-btn.wrong {
+            background: linear-gradient(135deg, var(--danger), var(--danger-dark));
+            animation: shakeWrong 0.5s ease;
+        }
+        
+        .platform-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.95;
+        }
+
+        .feedback-overlay {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.96);
+            border: 3.5px solid var(--dark);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            z-index: 50;
+            width: 85%;
+            max-width: 380px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+        .feedback-overlay.show { opacity: 1; }
+        .feedback-title { font-size: 1.3rem; font-weight: 900; margin-bottom: 4px; }
+        .feedback-text { font-size: 0.9rem; font-weight: 700; line-height: 1.35; }
+        .feedback-correct { color: var(--primary-dark); }
+        .feedback-wrong { color: var(--danger); }
+
+        @keyframes frogIdle {
+            0%, 100% { transform: translateX(-50%) translateY(0) scale(1, 1); }
+            50% { transform: translateX(-50%) translateY(-6px) scale(1.03, 0.97); }
+        }
+
+        .anim-idle { animation: frogIdle 2s infinite ease-in-out; }
+
+        @keyframes dynamicJump {
+            0% { transform: translateX(-50%) translateY(0) scale(1, 1); }
+            50% { transform: translateX(calc(-50% + var(--jump-x) * 0.5)) translateY(calc(var(--jump-y) - 80px)) scale(0.9, 1.1) rotate(5deg); }
+            100% { transform: translateX(calc(-50% + var(--jump-x))) translateY(var(--jump-y)) scale(1, 1) rotate(0); }
+        }
+        .anim-dynamic-jump { animation: dynamicJump 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+
+        @keyframes dynamicFall {
+            0% { transform: translateX(-50%) translateY(0) scale(1, 1); }
+            30% { transform: translateX(calc(-50% + var(--jump-x) * 0.5)) translateY(calc(var(--jump-y) - 60px)) scale(0.9, 1.1) rotate(10deg); }
+            50% { transform: translateX(calc(-50% + var(--jump-x))) translateY(var(--jump-y)) scale(1, 1) rotate(30deg); } 
+            100% { transform: translateX(calc(-50% + var(--jump-x))) translateY(calc(var(--jump-y) + 200px)) scale(0.5) rotate(180deg); opacity: 0; }
+        }
+        .anim-dynamic-fall { animation: dynamicFall 0.8s ease-in forwards; }
+
+        @keyframes sceneMoveDown {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(80px); opacity: 0; }
+        }
+        @keyframes sceneMoveUp {
+            0% { transform: translateY(-40px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        .scene-out { animation: sceneMoveDown 0.45s forwards; }
+        .scene-in { animation: sceneMoveUp 0.45s forwards; }
+
+        @keyframes pulseCorrect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); box-shadow: 0 0 18px var(--leaf-glow); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shakeWrong {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        
+        @keyframes shakeBoard {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .board-shake { animation: shakeBoard 0.5s; border: 3px solid var(--danger) !important; }
+
+        .score-anim {
+            position: absolute;
+            color: var(--warning);
+            font-weight: 900;
+            font-size: 1.8rem;
+            text-shadow: 2px 2px 0 #000;
+            animation: floatUp 0.9s ease-out forwards;
+            pointer-events: none;
+            z-index: 100;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-45px) scale(1.4); opacity: 0; }
+        }
+
+        /* Splash Effect */
+        .splash {
+            position: absolute;
+            bottom: 12%;
+            left: 50%;
+            transform: translateX(calc(-50% + var(--splash-x, 0px)));
+            width: 90px; height: 45px;
+            pointer-events: none;
+            z-index: 12;
+        }
+        .splash::before, .splash::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 50%;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.85);
+            animation: ripple 0.75s ease-out forwards;
+        }
+        .splash::after { animation-delay: 0.18s; }
+        @keyframes ripple {
+            0% { width: 0; height: 0; opacity: 1; }
+            100% { width: 140px; height: 45px; opacity: 0; }
+        }
+
+        #results-screen {
+            background: rgba(15, 23, 42, 0.92);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .results-container {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 550px;
+            text-align: center;
+            border: 4px solid var(--dark);
+            box-shadow: 0 12px 0 var(--dark);
+        }
+
+        .results-title {
+            font-size: 2.2rem;
+            color: var(--dark);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+        }
+
+        .player-result {
+            background: var(--light);
+            border: 2px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .pr-info { text-align: left; }
+        .pr-name { font-weight: 900; font-size: 1.1rem; }
+        .pr-stats { font-size: 0.8rem; color: #475569; margin-top: 2px; }
+        .pr-score { font-size: 1.8rem; font-weight: 900; color: var(--primary-dark); }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px 24px;
+            border-radius: 20px;
+            border: 4px solid var(--dark);
+            max-width: 420px;
+            width: 90%;
+            transform: translateY(-15px);
+            transition: transform 0.25s;
+            max-height: 88vh;
+            overflow-y: auto;
+        }
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+        .modal-title { font-size: 1.4rem; font-weight: 900; margin-bottom: 12px; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 8px;}
+        .modal-text { font-size: 0.92rem; margin-bottom: 12px; line-height: 1.5; }
+        
+        .setting-row {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 12px; font-weight: 700; font-size: 0.9rem;
+        }
+        .toggle-btn {
+            background: var(--dark); color: white; border: none; padding: 6px 14px; border-radius: 20px; cursor: pointer; font-weight: bold;
+        }
+        .toggle-btn.on { background: var(--primary-dark); }
+
+        input[type=range] {
+            width: 100px;
+            accent-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-actions">
+        <button class="icon-btn" id="btnAudio" title="Toggle Audio">🔊</button>
+        <button class="icon-btn" id="btnFullscreen" title="Fullscreen">⛶</button>
+    </div>
+
+    <div id="menu-screen" class="screen">
+        <div class="bg-particles"></div>
+        
+        <h1 class="game-title">TAJWID FROG<br>ADVENTURE</h1>
+        <h2 class="game-subtitle">Petualangan Katak Belajar Tajwid</h2>
+        <div class="creator-text">Dibuat oleh Suryadi Rossoneri</div>
+        
+        <div class="menu-frog"><img src="https://imgur.com/PelXSgm.png" alt="Katak"></div>
+
+        <!-- Level Selection -->
+        <div class="level-selector">
+            <button class="level-btn active" data-level="1" onclick="app.setLevel(1)">Level 1 (Dasar)</button>
+            <button class="level-btn" data-level="2" onclick="app.setLevel(2)">Level 2 (Sedang)</button>
+            <button class="level-btn" data-level="3" onclick="app.setLevel(3)">Level 3 (Lanjut)</button>
+        </div>
+
+        <div class="menu-buttons">
+            <button class="btn-main" onclick="app.startGame('solo')">
+                SOLO
+                <small>1 Pemain</small>
+            </button>
+            <button class="btn-main blue" onclick="app.startGame('duel')">
+                DUEL
+                <small>2 Pemain</small>
+            </button>
+            <button class="btn-main yellow" onclick="app.startGame('squad')">
+                SQUAD
+                <small>4 Pemain</small>
+            </button>
+        </div>
+
+        <div class="menu-secondary">
+            <button class="btn-main dark" onclick="app.showModal('how-to-modal')">Cara Bermain</button>
+            <button class="btn-main dark" onclick="app.showModal('settings-modal')">Pengaturan</button>
+        </div>
+    </div>
+
+    <div id="game-screen" class="screen hidden">
+        <div id="playersContainer"></div>
+    </div>
+
+    <div id="results-screen" class="screen hidden">
+        <div class="results-container">
+            <h2 class="results-title">HASIL PERMAINAN</h2>
+            <div id="results-list"></div>
+            <div style="margin-top: 24px;">
+                <button class="btn-main" onclick="app.resetToMenu()">MENU UTAMA</button>
+            </div>
+            <div class="creator-text" style="margin-top: 16px; background: none; border-top: 1px solid #ccc; padding-top: 8px;">Dibuat oleh Suryadi Rossoneri</div>
+        </div>
+    </div>
+
+    <div id="how-to-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">Cara Bermain</h3>
+            <div class="modal-text">
+                <p>1. Baca pertanyaan Tajwid di bagian atas papan.</p>
+                <p>2. Pilih satu dari 4 daun jawaban yang menurutmu benar.</p>
+                <p>3. Jika <b>BENAR</b>, katak akan melompat naik dan skor bertambah.</p>
+                <p>4. Jika <b>SALAH</b>, katak jatuh ke air dan nyawamu berkurang.</p>
+                <p>5. Kumpulkan poin sebanyak mungkin dan dapatkan Combo!</p>
+                <p>6. Pintasan Keyboard (P1): Tombol 1/2/3/4 atau A/B/C/D.</p>
+            </div>
+            <button class="btn-main" style="font-size: 1.1rem; min-height: 44px;" onclick="app.closeModal('how-to-modal')">TUTUP</button>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">Pengaturan</h3>
+            <div class="setting-row">
+                <span>Musik & Efek Suara</span>
+                <button id="toggleAudioBtn" class="toggle-btn on" onclick="app.toggleAudio()">ON</button>
+            </div>
+            <div class="setting-row">
+                <span>Volume Audio</span>
+                <input type="range" id="volumeSlider" min="0" max="100" value="80" oninput="audio.setVolume(this.value)">
+            </div>
+            <div class="setting-row">
+                <span>Efek Animasi</span>
+                <button id="toggleAnimBtn" class="toggle-btn on" onclick="app.toggleAnim()">ON</button>
+            </div>
+            <button class="btn-main" style="font-size: 1.1rem; min-height: 44px; margin-top:16px;" onclick="app.closeModal('settings-modal')">TUTUP</button>
+        </div>
+    </div>
+
+    <template id="player-board-template">
+        <div class="player-board" id="player-{{id}}">
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="board-header">
+                <div class="player-badge p{{id}}-badge">
+                    <span>P{{id}}</span>
+                    <span class="status-tag">READY</span>
+                </div>
+                <div class="lives">❤️❤️❤️</div>
+                <div class="stats">
+                    <div class="score-text">SCORE: <span class="score-val">0</span></div>
+                    <div class="combo-text" style="color:var(--warning); font-size:0.75rem; height:14px;"></div>
+                </div>
+            </div>
+            
+            <div class="question-box">
+                <div class="question-num">Soal 1/10</div>
+                <div class="question-text">Memuat pertanyaan...</div>
+            </div>
+            
+            <div class="scene">
+                <div class="water-bg">
+                    <svg class="wave-svg wave-back" viewBox="0 0 400 30" preserveAspectRatio="none">
+                        <path d="M0,15 Q50,30 100,15 T200,15 T300,15 T400,15 L400,30 L0,30 Z" fill="#7dd3fc" opacity="0.6"/>
+                    </svg>
+                    <svg class="wave-svg wave-front" viewBox="0 0 400 30" preserveAspectRatio="none">
+                        <path d="M0,15 Q50,0 100,15 T200,15 T300,15 T400,15 L400,30 L0,30 Z" fill="#38bdf8"/>
+                    </svg>
+                </div>
+                
+                <div class="grass-container left-grass">
+                    <div class="grass g1"></div>
+                    <div class="grass g2"></div>
+                    <div class="grass g3"></div>
+                </div>
+                <div class="grass-container right-grass">
+                    <div class="grass g4"></div>
+                    <div class="grass g5"></div>
+                    <div class="grass g6"></div>
+                </div>
+
+                <div class="options-grid">
+                    <button class="platform-btn" data-index="0"></button>
+                    <button class="platform-btn" data-index="1"></button>
+                    <button class="platform-btn" data-index="2"></button>
+                    <button class="platform-btn" data-index="3"></button>
+                </div>
+                <div class="start-platform"></div>
+                <div class="frog-container anim-idle"><img src="https://imgur.com/PelXSgm.png" alt="Katak"></div>
+            </div>
+
+            <div class="feedback-overlay">
+                <div class="feedback-title"></div>
+                <div class="feedback-text"></div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        const tajwidQuestions = [
+            // Level 1: Dasar
+            { level: 1, q: "Hukum nun sukun (نْ) atau tanwin bertemu huruf ب adalah?", o: ["Izhar Halqi", "Idgham Bighunnah", "Iqlab", "Ikhfa Haqiqi"], a: 2, exp: "Nun sukun/tanwin bertemu ب dibaca Iqlab (menjadi suara mim)." },
+            { level: 1, q: "Apabila ada mim sukun (مْ) bertemu dengan huruf ba (ب), hukumnya?", o: ["Ikhfa Syafawi", "Idgham Mimi", "Izhar Syafawi", "Iqlab"], a: 0, exp: "Mim sukun bertemu ba dibaca Ikhfa Syafawi (samar di bibir)." },
+            { level: 1, q: "Berapa jumlah huruf Qalqalah?", o: ["4", "5", "6", "7"], a: 1, exp: "Huruf Qalqalah ada 5: ق, ط, ب, ج, د (Baju ditoko)." },
+            { level: 1, q: "Membaca Al-Qur'an dengan mendengung disebut?", o: ["Ghunnah", "Qalqalah", "Mad", "Waqaf"], a: 0, exp: "Ghunnah artinya mendengung, menahan suara di hidung." },
+            { level: 1, q: "Mana yang merupakan huruf Idgham Bighunnah?", o: ["ي, ن, م, و", "ل, ر", "ء, ه, ع, ح", "ب"], a: 0, exp: "Huruf Idgham Bighunnah disingkat YANMU (ي, ن, م, و)." },
+            { level: 1, q: "Berapa panjang harakat Mad Thabi'i?", o: ["1 harakat", "2 harakat", "4 harakat", "6 harakat"], a: 1, exp: "Mad Thabi'i (Mad Asli) dibaca panjang 2 harakat (1 alif)." },
+            { level: 1, q: "Jika nun sukun bertemu huruf 'Ain (ع), dibaca?", o: ["Ikhfa", "Iqlab", "Izhar Halqi", "Idgham"], a: 2, exp: "Bertemu huruf tenggorokan (ع) dibaca Izhar (jelas)." },
+            { level: 1, q: "Huruf Idgham Bilaghunnah adalah?", o: ["ل dan ر", "ي dan و", "م dan ن", "ق dan ط"], a: 0, exp: "Idgham Bilaghunnah artinya masuk tanpa dengung (Lam dan Ra)." },
+            { level: 1, q: "Tanda waqaf 'mim' (مـ) artinya?", o: ["Boleh berhenti", "Harus berhenti", "Lebih baik lanjut", "Dilarang berhenti"], a: 1, exp: "Waqaf Lazim (مـ) artinya harus/wajib berhenti." },
+            { level: 1, q: "Tanda waqaf 'la' (لا) artinya?", o: ["Harus berhenti", "Dilarang berhenti", "Boleh berhenti", "Berhenti sejenak"], a: 1, exp: "Waqaf Laa (لا) artinya dilarang berhenti." },
+
+            // Level 2: Sedang
+            { level: 2, q: "Mim sukun bertemu huruf selain mim dan ba dibaca?", o: ["Izhar Syafawi", "Ikhfa Syafawi", "Idgham Mimi", "Ghunnah"], a: 0, exp: "Dibaca Izhar Syafawi (jelas di bibir)." },
+            { level: 2, q: "Qalqalah yang terjadi di akhir kalimat karena diwaqafkan disebut?", o: ["Qalqalah Sugra", "Qalqalah Kubra", "Mad Arid Lissukun", "Ghunnah"], a: 1, exp: "Qalqalah Kubra (besar) terjadi saat waqaf (berhenti)." },
+            { level: 2, q: "Lafaz Allah (الله) didahului harakat kasrah dibaca?", o: ["Tafkhim (Tebal)", "Tarqiq (Tipis)", "Ghunnah", "Qalqalah"], a: 1, exp: "Lafaz Jalalah setelah kasrah dibaca Tarqiq (tipis)." },
+            { level: 2, q: "Huruf Izhar Halqi berjumlah?", o: ["4", "5", "6", "15"], a: 2, exp: "Ada 6: ء, ه, ع, ح, غ, خ." },
+            { level: 2, q: "Nun sukun bertemu huruf Kaf (ك) dibaca?", o: ["Ikhfa Haqiqi", "Izhar", "Iqlab", "Idgham"], a: 0, exp: "Dibaca Ikhfa Haqiqi (samar dan dengung)." },
+            { level: 2, q: "Fathah tanwin diikuti alif yang diwaqafkan di akhir ayat disebut?", o: ["Mad Iwadh", "Mad Badal", "Mad Wajib", "Mad Jaiz"], a: 0, exp: "Mad Iwadh dibaca panjang 2 harakat sebagai ganti tanwin." },
+            { level: 2, q: "Hukum nun ditasydid (نّ) dan mim ditasydid (مّ) adalah?", o: ["Izhar", "Ghunnah Musyaddadah", "Qalqalah", "Ikhfa"], a: 1, exp: "Wajib dibaca dengung (Ghunnah Musyaddadah)." },
+            { level: 2, q: "Huruf Ikhfa Haqiqi berjumlah?", o: ["6", "15", "5", "4"], a: 1, exp: "Ada 15 huruf, dibaca samar." },
+            { level: 2, q: "Mim sukun bertemu mim (م) disebut?", o: ["Idgham Mimi", "Ikhfa Syafawi", "Izhar Syafawi", "Iqlab"], a: 0, exp: "Idgham Mimi / Mutamatsilain (memasukkan ke huruf yang sama)." },
+            { level: 2, q: "Alif Lam Qamariyah ditandai dengan?", o: ["Tasydid pada huruf setelahnya", "Sukun pada huruf Lam", "Fathah pada huruf Lam", "Tanpa tanda"], a: 1, exp: "Lam disukunkan dan dibaca jelas (Al-Qamariyah)." },
+
+            // Level 3: Lanjut
+            { level: 3, q: "Mad Wajib Muttasil terjadi jika Mad Thabi'i bertemu hamzah dalam?", o: ["Satu kata", "Dua kata", "Awal ayat", "Akhir ayat"], a: 0, exp: "Muttasil artinya bersambung (dalam satu kata)." },
+            { level: 3, q: "Mad Jaiz Munfasil dibaca panjang berapa harakat?", o: ["1 harakat", "2, 4, atau 5 harakat", "6 harakat", "8 harakat"], a: 1, exp: "Boleh 2, 4, atau 5 harakat (Munfasil = terpisah)." },
+            { level: 3, q: "Hukum tajwid lafaz بِسْمِ اللَّهِ adalah?", o: ["Tarqiq", "Tafkhim", "Ghunnah", "Qalqalah"], a: 0, exp: "Lafaz Allah didahului kasrah dibaca tipis (Tarqiq)." },
+            { level: 3, q: "Berapa jumlah makhraj huruf secara umum?", o: ["15", "17", "28", "29"], a: 1, exp: "Secara umum tempat keluarnya huruf ada 17." },
+            { level: 3, q: "Sifat huruf yang mengalirkan napas disebut?", o: ["Jahr", "Hams", "Syiddah", "Rakhawah"], a: 1, exp: "Hams artinya berdesis/mengalirkan napas (contoh: f, s, kh)." },
+            { level: 3, q: "Waqaf Jaiz ditandai dengan huruf?", o: ["م", "لا", "ج", "قلى"], a: 2, exp: "Huruf Jim (ج) artinya Boleh berhenti, boleh lanjut." },
+            { level: 3, q: "Alif Lam Syamsiyah ditandai dengan tanda apa setelah Lam?", o: ["Sukun", "Tasydid", "Fathah", "Kasrah"], a: 1, exp: "Huruf setelah Alif Lam diberi tasydid." },
+            { level: 3, q: "Huruf Qalqalah Sugra dipantulkan ketika berharakat?", o: ["Fathah", "Kasrah", "Sukun asli", "Dammah"], a: 2, exp: "Qalqalah Sugra terjadi saat huruf qalqalah berharakat sukun asli." },
+            { level: 3, q: "Panjang Mad Arid Lissukun saat dibaca tartil adalah?", o: ["2, 4, atau 6 harakat", "1 harakat saja", "8 harakat", "5 harakat"], a: 0, exp: "Mad Arid Lissukun boleh dibaca 2, 4, atau 6 harakat." },
+            { level: 3, q: "Membaca ta'awudz sebelum membaca Al-Qur'an hukumnya?", o: ["Sunnah Muakkad", "Wajib", "Mubah", "Makruh"], a: 0, exp: "Hukum membaca Ta'awudz disunnahkan (Sunnah Muakkad)." }
+        ];
+
+        class AudioEngine {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+                this.volume = 0.8;
+                this.bgmInterval = null;
+                this.melody = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63];
+                this.melodyIdx = 0;
+            }
+            
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                }
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+            }
+
+            setVolume(val) {
+                this.volume = val / 100;
+            }
+
+            toggle() {
+                this.enabled = !this.enabled;
+                if (!this.enabled) this.stopBGM();
+                else if (app.gameState.isPlaying) this.startBGM();
+                return this.enabled;
+            }
+
+            playTone(freq, type, duration, vol=0.1) {
+                if (!this.enabled || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    const finalVol = vol * this.volume;
+                    gain.gain.setValueAtTime(finalVol, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e) {}
+            }
+
+            playNoise(duration, vol=0.15) {
+                if (!this.enabled || !this.ctx) return;
+                try {
+                    const bufferSize = this.ctx.sampleRate * duration;
+                    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+                    const noise = this.ctx.createBufferSource();
+                    noise.buffer = buffer;
+                    const filter = this.ctx.createBiquadFilter();
+                    filter.type = 'lowpass'; filter.frequency.value = 800;
+                    const gain = this.ctx.createGain();
+                    const finalVol = vol * this.volume;
+                    gain.gain.setValueAtTime(finalVol, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                    noise.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
+                    noise.start();
+                } catch(e) {}
+            }
+
+            sfxJump() { this.playTone(550, 'sine', 0.12, 0.12); setTimeout(()=>this.playTone(750, 'sine', 0.15, 0.12), 40); }
+            sfxCorrect() { this.playTone(523.25, 'triangle', 0.1, 0.2); setTimeout(()=>this.playTone(659.25, 'triangle', 0.15, 0.2), 90); setTimeout(()=>this.playTone(783.99, 'triangle', 0.35, 0.2), 180); }
+            sfxWrong() { this.playTone(160, 'sawtooth', 0.25, 0.2); setTimeout(()=>this.playTone(110, 'sawtooth', 0.35, 0.2), 120); }
+            sfxSplash() { this.playNoise(0.45, 0.4); this.playTone(180, 'sine', 0.25, 0.25); }
+            sfxClick() { this.playTone(700, 'square', 0.04, 0.05); }
+            sfxGameOver() { this.playTone(280, 'sawtooth', 0.4, 0.2); setTimeout(()=>this.playTone(220, 'sawtooth', 0.4, 0.2), 250); setTimeout(()=>this.playTone(170, 'sawtooth', 0.8, 0.2), 500); }
+
+            startBGM() {
+                if (!this.enabled || !this.ctx) return;
+                this.stopBGM();
+                this.bgmInterval = setInterval(() => {
+                    this.playTone(this.melody[this.melodyIdx], 'sine', 0.18, 0.025);
+                    this.melodyIdx = (this.melodyIdx + 1) % this.melody.length;
+                }, 420);
+            }
+            stopBGM() {
+                if (this.bgmInterval) { clearInterval(this.bgmInterval); this.bgmInterval = null; }
+            }
+        }
+
+        const audio = new AudioEngine();
+
+        const app = {
+            TOTAL_QUESTIONS: 10,
+            MAX_LIVES: 3,
+            selectedLevel: 1,
+            animEnabled: true,
+            
+            gameState: {
+                mode: '',
+                isPlaying: false,
+                players: []
+            },
+
+            init() {
+                // Event Listeners for action buttons
+                document.getElementById('btnAudio').addEventListener('click', () => {
+                    audio.init();
+                    const isOn = audio.toggle();
+                    document.getElementById('btnAudio').textContent = isOn ? '🔊' : '🔇';
+                    document.getElementById('toggleAudioBtn').textContent = isOn ? 'ON' : 'OFF';
+                    document.getElementById('toggleAudioBtn').className = `toggle-btn ${isOn ? 'on' : ''}`;
+                });
+
+                document.getElementById('btnFullscreen').addEventListener('click', () => {
+                    if (!document.fullscreenElement) {
+                        document.documentElement.requestFullscreen().catch(() => {});
+                        document.getElementById('btnFullscreen').textContent = 'EXIT';
+                    } else {
+                        document.exitFullscreen();
+                        document.getElementById('btnFullscreen').textContent = '⛶';
+                    }
+                });
+
+                // User interaction gesture to enable Web Audio Context
+                document.body.addEventListener('click', () => { if(audio.enabled) audio.init(); }, {once:true});
+            },
+
+            setLevel(lvl) {
+                audio.sfxClick();
+                this.selectedLevel = lvl;
+                document.querySelectorAll('.level-btn').forEach(btn => {
+                    btn.classList.toggle('active', parseInt(btn.dataset.level) === lvl);
+                });
+            },
+
+            toggleAnim() {
+                this.animEnabled = !this.animEnabled;
+                document.getElementById('toggleAnimBtn').textContent = this.animEnabled ? 'ON' : 'OFF';
+                document.getElementById('toggleAnimBtn').className = `toggle-btn ${this.animEnabled ? 'on' : ''}`;
+            },
+
+            showModal(id) { 
+                audio.sfxClick();
+                document.getElementById(id).classList.add('active'); 
+            },
+            closeModal(id) { 
+                audio.sfxClick();
+                document.getElementById(id).classList.remove('active'); 
+            },
+            toggleAudio() {
+                const isOn = audio.toggle();
+                document.getElementById('btnAudio').textContent = isOn ? '🔊' : '🔇';
+                document.getElementById('toggleAudioBtn').textContent = isOn ? 'ON' : 'OFF';
+                document.getElementById('toggleAudioBtn').className = `toggle-btn ${isOn ? 'on' : ''}`;
+            },
+
+            switchScreen(showId) {
+                document.querySelectorAll('.screen').forEach(el => {
+                    el.classList.add('mode-transition');
+                    setTimeout(() => el.classList.add('hidden'), 300);
+                });
+                
+                setTimeout(() => {
+                    const screen = document.getElementById(showId);
+                    screen.classList.remove('hidden');
+                    void screen.offsetWidth;
+                    screen.classList.remove('mode-transition');
+                }, 300);
+            },
+
+            startGame(mode) {
+                audio.sfxClick();
+                audio.init();
+                
+                let pCount = 1;
+                if(mode === 'duel') pCount = 2;
+                if(mode === 'squad') pCount = 4;
+
+                // Filter question bank by selected level (or fallback to all if empty)
+                let filteredQs = tajwidQuestions.filter(q => q.level === this.selectedLevel);
+                if(filteredQs.length < this.TOTAL_QUESTIONS) filteredQs = tajwidQuestions;
+
+                this.gameState = {
+                    mode: mode,
+                    isPlaying: true,
+                    players: Array.from({length: pCount}, (_, i) => ({
+                        id: i + 1,
+                        score: 0,
+                        lives: this.MAX_LIVES,
+                        combo: 0,
+                        maxCombo: 0,
+                        correct: 0,
+                        wrong: 0,
+                        qIndex: 0,
+                        qList: this.shuffleArray([...filteredQs]).slice(0, this.TOTAL_QUESTIONS),
+                        status: 'playing',
+                        isAnimating: false
+                    }))
+                };
+
+                this.setupBoardUI();
+                this.switchScreen('game-screen');
+                audio.startBGM();
+
+                setTimeout(() => {
+                    this.gameState.players.forEach(p => this.loadQuestion(p));
+                }, 400);
+            },
+
+            setupBoardUI() {
+                const container = document.getElementById('playersContainer');
+                container.innerHTML = '';
+                container.className = `layout-${this.gameState.mode}`;
+                
+                const template = document.getElementById('player-board-template').innerHTML;
+                
+                this.gameState.players.forEach(p => {
+                    let html = template.replace(/{{id}}/g, p.id);
+                    container.insertAdjacentHTML('beforeend', html);
+                    
+                    const board = document.getElementById(`player-${p.id}`);
+                    const btns = board.querySelectorAll('.platform-btn');
+                    btns.forEach((btn, idx) => {
+                        btn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            this.handleAnswer(p.id, idx);
+                        });
+                    });
+                });
+            },
+
+            shuffleArray(array) {
+                let curId = array.length;
+                while (0 !== curId) {
+                    let randId = Math.floor(Math.random() * curId);
+                    curId -= 1;
+                    let tmp = array[curId];
+                    array[curId] = array[randId];
+                    array[randId] = tmp;
+                }
+                return array;
+            },
+
+            loadQuestion(player) {
+                if (player.status !== 'playing') return;
+
+                const board = document.getElementById(`player-${player.id}`);
+                const qData = player.qList[player.qIndex];
+                
+                // Update Progress bar
+                const progress = (player.qIndex / this.TOTAL_QUESTIONS) * 100;
+                board.querySelector('.progress-bar').style.width = `${progress}%`;
+
+                // Set Question Text
+                board.querySelector('.question-num').textContent = `Soal ${player.qIndex + 1}/${this.TOTAL_QUESTIONS}`;
+                board.querySelector('.question-text').textContent = qData.q;
+
+                // Prepare and shuffle options
+                let optionsWithIndex = qData.o.map((opt, i) => ({ text: opt, isCorrect: i === qData.a }));
+                optionsWithIndex = this.shuffleArray(optionsWithIndex);
+                
+                player.currentCorrectBtnIndex = optionsWithIndex.findIndex(o => o.isCorrect);
+                player.currentExplanation = qData.exp;
+
+                // Render option buttons
+                const btns = board.querySelectorAll('.platform-btn');
+                btns.forEach((btn, idx) => {
+                    btn.textContent = optionsWithIndex[idx].text;
+                    btn.className = 'platform-btn';
+                    btn.disabled = false;
+                });
+
+                // Reset Scene status
+                const scene = board.querySelector('.scene');
+                scene.classList.remove('scene-out', 'scene-in');
+                const frog = board.querySelector('.frog-container');
+                frog.style.removeProperty('--jump-x');
+                frog.style.removeProperty('--jump-y');
+                frog.className = 'frog-container anim-idle';
+            },
+
+            handleAnswer(playerId, btnIndex) {
+                const player = this.gameState.players.find(p => p.id === playerId);
+                if (!player || player.status !== 'playing' || player.isAnimating) return;
+
+                player.isAnimating = true;
+                const board = document.getElementById(`player-${playerId}`);
+                const btns = board.querySelectorAll('.platform-btn');
+                const clickedBtn = btns[btnIndex];
+                const frog = board.querySelector('.frog-container');
+                
+                btns.forEach(b => b.disabled = true);
+                const isCorrect = (btnIndex === player.currentCorrectBtnIndex);
+
+                if (this.animEnabled) {
+                    const frogRect = frog.getBoundingClientRect();
+                    const btnRect = clickedBtn.getBoundingClientRect();
+                    
+                    const startX = frogRect.left + frogRect.width / 2;
+                    const startY = frogRect.top + frogRect.height / 2;
+                    
+                    const targetX = btnRect.left + btnRect.width / 2;
+                    // Land precisely on top of the leaf platform
+                    const targetY = btnRect.top + btnRect.height / 2 - (frogRect.height * 0.3);
+                    
+                    const deltaX = targetX - startX;
+                    const deltaY = targetY - startY;
+
+                    frog.style.setProperty('--jump-x', `${deltaX}px`);
+                    frog.style.setProperty('--jump-y', `${deltaY}px`);
+                    player.lastJumpX = deltaX; // Save horizontal jump distance for splash
+                    
+                    frog.className = `frog-container ${isCorrect ? 'anim-dynamic-jump' : 'anim-dynamic-fall'}`;
+                    
+                    if (!isCorrect) {
+                        setTimeout(() => {
+                            if (player.status !== 'playing') return;
+                            clickedBtn.classList.add('wrong');
+                            audio.sfxWrong();
+                            board.classList.add('board-shake');
+                            setTimeout(() => board.classList.remove('board-shake'), 500);
+                        }, 400); // Trigger hit effect mid-fall when frog touches leaf
+                    }
+                } else {
+                    if (!isCorrect) {
+                        clickedBtn.classList.add('wrong');
+                        audio.sfxWrong();
+                    }
+                }
+
+                audio.sfxJump();
+
+                setTimeout(() => {
+                    if (isCorrect) {
+                        this.processCorrect(player, board, clickedBtn);
+                    } else {
+                        this.processWrong(player, board, clickedBtn, frog);
+                    }
+                }, this.animEnabled ? (isCorrect ? 550 : 800) : 100);
+            },
+
+            processCorrect(player, board, clickedBtn) {
+                audio.sfxCorrect();
+                clickedBtn.classList.add('correct');
+                
+                player.correct++;
+                player.combo++;
+                if(player.combo > player.maxCombo) player.maxCombo = player.combo;
+                
+                let pts = 10;
+                let comboMsg = "";
+                if(player.combo >= 4) { pts += 15; comboMsg = "COMBO x4! (+15)"; }
+                else if(player.combo === 3) { pts += 10; comboMsg = "COMBO x3! (+10)"; }
+                else if(player.combo === 2) { pts += 5; comboMsg = "COMBO x2! (+5)"; }
+                
+                player.score += pts;
+                
+                board.querySelector('.score-val').textContent = player.score;
+                board.querySelector('.combo-text').textContent = comboMsg;
+                
+                // Float score popup
+                const scoreAnim = document.createElement('div');
+                scoreAnim.className = 'score-anim';
+                scoreAnim.textContent = `+${pts}`;
+                scoreAnim.style.top = '45%'; scoreAnim.style.left = '45%';
+                board.querySelector('.scene').appendChild(scoreAnim);
+                setTimeout(()=>scoreAnim.remove(), 900);
+
+                this.showFeedback(board, true, "BENAR! 🌟", player.currentExplanation);
+
+                setTimeout(() => {
+                    const scene = board.querySelector('.scene');
+                    if(this.animEnabled) scene.classList.add('scene-out');
+                    setTimeout(() => {
+                        this.nextQuestion(player);
+                        if(this.animEnabled) {
+                            scene.classList.remove('scene-out');
+                            scene.classList.add('scene-in');
+                        }
+                    }, 450);
+                }, 1400);
+            },
+
+            processWrong(player, board, clickedBtn, frog) {
+                player.wrong++;
+                player.combo = 0;
+                player.lives--;
+                
+                board.querySelector('.combo-text').textContent = "";
+                
+                audio.sfxSplash();
+                this.createSplash(board, player.lastJumpX || 0);
+                
+                const hearts = "❤️".repeat(player.lives) + "🤍".repeat(this.MAX_LIVES - player.lives);
+                board.querySelector('.lives').textContent = hearts;
+
+                this.showFeedback(board, false, "BELUM TEPAT 😊", `Jawaban benar: ${board.querySelectorAll('.platform-btn')[player.currentCorrectBtnIndex].textContent}.<br><small>${player.currentExplanation}</small>`);
+
+                setTimeout(() => {
+                    audio.sfxSplash();
+                    this.createSplash(board);
+                    
+                    const hearts = "❤️".repeat(player.lives) + "🤍".repeat(this.MAX_LIVES - player.lives);
+                    board.querySelector('.lives').textContent = hearts;
+
+                    this.showFeedback(board, false, "BELUM TEPAT 😊", `Jawaban benar: ${board.querySelectorAll('.platform-btn')[player.currentCorrectBtnIndex].textContent}.<br><small>${player.currentExplanation}</small>`);
+
+                    setTimeout(() => {
+                        if (player.lives <= 0) {
+                            this.setGameOver(player, board);
+                        } else {
+                            this.nextQuestion(player);
+                        }
+                    }, 2200);
+                }, 350);
+            },
+
+            createSplash(board, jumpX = 0) {
+                const splash = document.createElement('div');
+                splash.className = 'splash';
+                splash.style.setProperty('--splash-x', `${jumpX}px`);
+                
+                // Add splash droplets
+                for (let i = 0; i < 6; i++) {
+                    const drop = document.createElement('div');
+                    drop.className = 'splash-drop';
+                    const randomX = (Math.random() - 0.5) * 140; 
+                    const randomY = - (Math.random() * 80 + 40);
+                    drop.style.setProperty('--drop-x', `${randomX}px`);
+                    drop.style.setProperty('--drop-y', `${randomY}px`);
+                    splash.appendChild(drop);
+                }
+
+                board.querySelector('.scene').appendChild(splash);
+                setTimeout(()=>splash.remove(), 800);
+            },
+
+            showFeedback(board, isCorrect, title, text) {
+                const fb = board.querySelector('.feedback-overlay');
+                fb.querySelector('.feedback-title').textContent = title;
+                fb.querySelector('.feedback-title').className = `feedback-title ${isCorrect ? 'feedback-correct' : 'feedback-wrong'}`;
+                fb.querySelector('.feedback-text').innerHTML = text;
+                fb.classList.add('show');
+                setTimeout(() => fb.classList.remove('show'), 1800);
+            },
+
+            nextQuestion(player) {
+                player.qIndex++;
+                if (player.qIndex >= this.TOTAL_QUESTIONS) {
+                    player.status = 'finished';
+                    const board = document.getElementById(`player-${player.id}`);
+                    board.querySelector('.status-tag').textContent = 'FINISHED';
+                    board.querySelector('.question-box').innerHTML = "<div style='font-size:1.1rem; color:var(--primary-dark); font-weight:900;'>✨ LEVEL SELESAI ✨</div>";
+                    board.querySelector('.scene').innerHTML = `<div class="flex-center" style="height:100%; font-size:4.5rem;"><img src="https://imgur.com/PelXSgm.png" style="height: 1em; margin-right: 10px;">🏆</div>`;
+                    this.checkAllPlayersDone();
+                } else {
+                    this.loadQuestion(player);
+                }
+                player.isAnimating = false;
+            },
+
+            setGameOver(player, board) {
+                player.status = 'gameover';
+                board.querySelector('.status-tag').textContent = 'GAME OVER';
+                board.querySelector('.question-box').innerHTML = "<div style='font-size:1.1rem; color:var(--danger); font-weight:900;'>💧 GAME OVER 💧</div>";
+                board.querySelector('.scene').innerHTML = `
+                    <div class="water-bg">
+                        <svg class="wave-svg wave-back" viewBox="0 0 400 30" preserveAspectRatio="none"><path d="M0,15 Q50,30 100,15 T200,15 T300,15 T400,15 L400,30 L0,30 Z" fill="#7dd3fc" opacity="0.6"/></svg>
+                        <svg class="wave-svg wave-front" viewBox="0 0 400 30" preserveAspectRatio="none"><path d="M0,15 Q50,0 100,15 T200,15 T300,15 T400,15 L400,30 L0,30 Z" fill="#38bdf8"/></svg>
+                    </div>
+                    <div class="flex-center" style="height:100%; flex-direction:column; z-index:10;">
+                        <div style="font-size:3.5rem; margin-bottom:6px;">💀</div>
+                        <h4 style="color:white; text-shadow:1px 1px 2px #000;">NYAWA HABIS</h4>
+                    </div>
+                `;
+                this.checkAllPlayersDone();
+            },
+
+            checkAllPlayersDone() {
+                const allDone = this.gameState.players.every(p => p.status !== 'playing');
+                if (allDone) {
+                    setTimeout(() => this.showResults(), 1200);
+                }
+            },
+
+            showResults() {
+                audio.stopBGM();
+                audio.sfxGameOver();
+                
+                const list = document.getElementById('results-list');
+                list.innerHTML = '';
+                
+                const sortedPlayers = [...this.gameState.players].sort((a,b) => b.score - a.score);
+
+                sortedPlayers.forEach(p => {
+                    let statusText = p.status === 'gameover' ? '<span style="color:red">Game Over</span>' : '<span style="color:green">Selesai</span>';
+                    
+                    list.innerHTML += `
+                        <div class="player-result">
+                            <div class="pr-info">
+                                <div class="pr-name p${p.id}-badge" style="display:inline-block; margin-bottom:4px;">PLAYER ${p.id}</div>
+                                <div class="pr-stats">
+                                    Status: ${statusText}<br>
+                                    Benar: ${p.correct} | Salah: ${p.wrong}<br>
+                                    Combo Terbaik: x${p.maxCombo}
+                                </div>
+                            </div>
+                            <div class="pr-score">${p.score}</div>
+                        </div>
+                    `;
+                });
+
+                this.switchScreen('results-screen');
+                this.gameState.isPlaying = false;
+            },
+
+            resetToMenu() {
+                audio.sfxClick();
+                this.switchScreen('menu-screen');
+            }
+        };
+
+        // Window load initialization
+        window.onload = () => {
+            app.init();
+        };
+
+        document.addEventListener('keydown', (e) => {
+            if (!app.gameState.isPlaying) return;
+            
+            // Single Player Key Mapping (1/2/3/4 or A/B/C/D)
+            if (app.gameState.mode === 'solo') {
+                const p1 = app.gameState.players[0];
+                if(e.key === '1' || e.key.toLowerCase() === 'a') app.handleAnswer(p1.id, 0);
+                if(e.key === '2' || e.key.toLowerCase() === 'b') app.handleAnswer(p1.id, 1);
+                if(e.key === '3' || e.key.toLowerCase() === 'c') app.handleAnswer(p1.id, 2);
+                if(e.key === '4' || e.key.toLowerCase() === 'd') app.handleAnswer(p1.id, 3);
+            }
+            
+            // Global Hotkeys
+            if (e.key.toLowerCase() === 'f') document.getElementById('btnFullscreen').click();
+            if (e.key.toLowerCase() === 'm') document.getElementById('btnAudio').click();
+        });
+    </script>
+</body>
+</html>
