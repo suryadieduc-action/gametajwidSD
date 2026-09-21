@@ -316,11 +316,12 @@
             background: rgba(255, 255, 255, 0.92);
             padding: 8px 12px;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
             border-bottom: 2.5px solid var(--dark);
             z-index: 20;
             position: relative;
+            min-height: 54px;
         }
 
         .player-badge {
@@ -348,22 +349,34 @@
             text-transform: uppercase;
         }
 
-        .stats {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            font-weight: 800;
-            font-size: 0.85rem;
-            position: relative;
-            z-index: 2;
-        }
-
-        .lives { 
+        .center-stats {
             position: absolute;
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
-            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1;
+        }
+
+        .stats {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 2;
+            background: white;
+            padding: 2px 8px;
+            border-radius: 8px;
+            border: 2px solid var(--dark);
+            box-shadow: 0 2px 0 var(--dark);
+        }
+
+        .lives { 
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
             letter-spacing: 2px;
             white-space: nowrap;
             z-index: 1;
@@ -807,6 +820,7 @@
 <body>
 
     <div class="top-actions">
+        <button class="icon-btn hidden" id="inGameHomeBtn" title="Kembali ke Menu Utama" onclick="app.confirmHome()">🏠</button>
         <button class="icon-btn" id="btnAudio" title="Toggle Audio">🔊</button>
         <button class="icon-btn" id="btnFullscreen" title="Fullscreen">⛶</button>
     </div>
@@ -897,6 +911,17 @@
         </div>
     </div>
 
+    <div id="confirm-home-modal" class="modal-overlay">
+        <div class="modal-content" style="text-align: center;">
+            <h3 class="modal-title" style="color: var(--danger-dark); border-bottom-color: #fee2e2;">Kembali ke Menu?</h3>
+            <div class="modal-text">Permainan saat ini akan dihentikan dan progres akan hilang.</div>
+            <div style="display: flex; gap: 10px; margin-top: 16px;">
+                <button class="btn-main dark" style="flex: 1; min-height: 44px; font-size: 1rem; margin: 0;" onclick="app.closeModal('confirm-home-modal')">BATAL</button>
+                <button class="btn-main" style="flex: 1; min-height: 44px; font-size: 1rem; margin: 0; background: linear-gradient(to bottom, var(--danger), var(--danger-dark)); border-color: white;" onclick="app.forceQuitToMenu()">KEMBALI</button>
+            </div>
+        </div>
+    </div>
+
     <template id="player-board-template">
         <div class="player-board" id="player-{{id}}">
             <div class="progress-container"><div class="progress-bar"></div></div>
@@ -905,10 +930,12 @@
                     <span>P{{id}}</span>
                     <span class="status-tag">READY</span>
                 </div>
-                <div class="lives">❤️❤️❤️</div>
-                <div class="stats">
-                    <div class="score-text">SCORE: <span class="score-val">0</span></div>
-                    <div class="combo-text" style="color:var(--warning); font-size:0.75rem; height:14px;"></div>
+                <div class="center-stats">
+                    <div class="lives">❤️❤️❤️</div>
+                    <div class="stats">
+                        <div class="score-text">SCORE: <span class="score-val">0</span></div>
+                        <div class="combo-text" style="color:var(--warning); font-size:0.75rem; height:14px; position:absolute; bottom:-16px; left:50%; transform:translateX(-50%); white-space:nowrap; text-shadow: 1px 1px 0 #000;"></div>
+                    </div>
                 </div>
             </div>
             
@@ -1140,6 +1167,22 @@
                 audio.sfxClick();
                 document.getElementById(id).classList.remove('active'); 
             },
+            
+            confirmHome() {
+                audio.sfxClick();
+                this.showModal('confirm-home-modal');
+            },
+            
+            forceQuitToMenu() {
+                this.closeModal('confirm-home-modal');
+                this.gameState.isPlaying = false;
+                if(this.gameState.players) {
+                    this.gameState.players.forEach(p => p.status = 'quit'); 
+                }
+                audio.stopBGM();
+                this.resetToMenu();
+            },
+
             toggleAudio() {
                 const isOn = audio.toggle();
                 document.getElementById('btnAudio').textContent = isOn ? '🔊' : '🔇';
@@ -1193,6 +1236,7 @@
 
                 this.setupBoardUI();
                 this.switchScreen('game-screen');
+                document.getElementById('inGameHomeBtn').classList.remove('hidden');
                 audio.startBGM();
 
                 setTimeout(() => {
@@ -1479,6 +1523,7 @@
             showResults() {
                 audio.stopBGM();
                 audio.sfxGameOver();
+                document.getElementById('inGameHomeBtn').classList.add('hidden');
                 
                 const list = document.getElementById('results-list');
                 list.innerHTML = '';
@@ -1509,6 +1554,7 @@
 
             resetToMenu() {
                 audio.sfxClick();
+                document.getElementById('inGameHomeBtn').classList.add('hidden');
                 this.switchScreen('menu-screen');
             }
         };
